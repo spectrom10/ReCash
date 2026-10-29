@@ -24,7 +24,7 @@ export async function onRequestPost({ request, env }) {
     });
 
   // Security switch: AI stays disabled until explicitly enabled.
-  if (env.CHAT_ENABLED !== "true") {
+  if if (String(env.CHAT_ENABLED ?? "").trim() !== "true") {
     return json({
       error: "ReCash AI is temporarily unavailable."
     }, 503);
