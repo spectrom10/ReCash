@@ -1,0 +1,591 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=Source+Sans+3:wght@400;500;600&display=swap');
+
+:root {
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+
+  --page: #1F3358;
+  --panel: #27406B;
+  --masthead: #000000;
+  --rule: #3B5688;
+  --text: #E8EEF9;
+  --muted: #A9B8D8;
+
+  --paper: #F7F9FC;
+  --paper-rule: #D5DCEA;
+  --paper-text: #14213D;
+  --paper-muted: #5B6B8C;
+
+  --up-dark: #5EE08A;
+  --down-dark: #FF8A8A;
+  --up: #15803D;
+  --down: #B91C1C;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font: 400 16px/1.5 var(--sans);
+}
+
+/* Accessibility */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  padding: 10px 16px;
+  background: var(--paper);
+  color: var(--paper-text);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:focus-visible {
+  outline: 3px solid var(--up-dark);
+  outline-offset: 4px;
+}
+
+.panel-news :focus-visible {
+  outline-color: var(--paper-text);
+}
+
+/* Masthead and logo */
+
+.site-header {
+  background: var(--masthead);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.logo-mark {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font: 700 28px/1 var(--serif);
+}
+
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-top: 14px solid var(--up-dark);
+  border-left: 14px solid transparent;
+}
+
+.logo-name {
+  font: 700 30px/1 var(--serif);
+  color: #fff;
+}
+
+.logo-name span {
+  color: var(--up-dark);
+}
+
+.logo-tag {
+  display: block;
+  margin-top: 4px;
+  font: 400 10px/1.4 var(--sans);
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 28px;
+  font-weight: 500;
+}
+
+.site-header nav a:hover {
+  color: #fff;
+}
+
+.preview-badge {
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+/* Ticker strip */
+
+.ticker {
+  background: #162847;
+  border-bottom: 1px solid var(--rule);
+  padding: 8px 32px;
+  display: flex;
+  gap: 28px;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+/* Three-column layout */
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 300px;
+  grid-template-areas: "markets news ai";
+  gap: 24px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  align-items: start;
+}
+
+.main-grid > section {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.panel-title {
+  margin: 0 0 14px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid currentColor;
+  font: 600 12px/1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kicker,
+.panel-sub {
+  display: none;
+}
+
+.data-status {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.panel-footer {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.panel-footer p {
+  margin: 0;
+}
+
+/* Markets */
+
+.panel-markets {
+  grid-area: markets;
+  background: var(--panel);
+  padding: 18px;
+}
+
+.panel-markets h3 {
+  margin: 18px 0 4px;
+  font: 600 15px var(--serif);
+  color: #fff;
+}
+
+.market-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.market-table caption {
+  text-align: left;
+  color: var(--muted);
+  font-size: 12px;
+  padding-bottom: 12px;
+}
+
+.market-table th,
+.market-table td {
+  padding: 9px 2px;
+  border-top: 1px solid var(--rule);
+  text-align: right;
+}
+
+.market-table th:first-child {
+  text-align: left;
+}
+
+.market-table thead {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.market-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px solid var(--rule);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.up {
+  color: var(--up-dark);
+}
+
+.down {
+  color: var(--down-dark);
+}
+
+/* Editorial news column */
+
+.panel-news {
+  grid-area: news;
+  background: var(--paper);
+  color: var(--paper-text);
+  padding: 24px 32px 12px;
+}
+
+.panel-news .data-status,
+.panel-news .panel-footer {
+  color: var(--paper-muted);
+}
+
+.panel-news .panel-footer {
+  border-color: var(--paper-rule);
+}
+
+.news-tabs {
+  display: flex;
+  gap: 22px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--paper-muted);
+}
+
+.news-tabs .active {
+  color: var(--paper-text);
+  border-bottom: 2px solid var(--paper-text);
+}
+
+.article {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.article:last-child {
+  border-bottom: 0;
+}
+
+.article h3 {
+  margin: 0 0 6px;
+  font: 700 22px/1.25 var(--serif);
+}
+
+.article:first-of-type h3 {
+  font-size: 32px;
+  line-height: 1.18;
+}
+
+.article--up h3 {
+  color: var(--up);
+}
+
+.article--down h3 {
+  color: var(--down);
+}
+
+.article a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.article a:hover h3 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-meta {
+  font-size: 13px;
+  color: var(--paper-muted);
+}
+
+.article-impact {
+  margin: 8px 0 0;
+  font-size: 16px;
+  color: var(--paper-text);
+  max-width: 70ch;
+}
+
+.article--up .article-impact::before {
+  content: "▲ Bullish. ";
+  color: var(--up);
+  font-weight: 600;
+}
+
+.article--down .article-impact::before {
+  content: "▼ Bearish. ";
+  color: var(--down);
+  font-weight: 600;
+}
+
+/* AI chat */
+
+.panel-ai {
+  grid-area: ai;
+  background: var(--panel);
+  padding: 18px;
+}
+
+/* Keep the brand capitalization exactly as ReCash. */
+#chat-title,
+.msg-label {
+  text-transform: none;
+}
+
+.chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.msg {
+  max-width: 92%;
+  flex-shrink: 0;
+  padding: 10px 12px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.msg-label {
+  display: block;
+  margin: 0 0 3px;
+  font: 600 11px var(--sans);
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.msg--user {
+  align-self: flex-end;
+  background: #3A5A94;
+  color: #fff;
+}
+
+.msg--bot {
+  align-self: flex-start;
+  background: #EEF2F9;
+  color: var(--paper-text);
+  border-left: 3px solid #8FA6D6;
+}
+
+.msg > p:last-child {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.chat-form label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.chat-input {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  background: transparent;
+  color: var(--text);
+  border: 0;
+  border-bottom: 1px solid var(--muted);
+  font: 400 15px var(--sans);
+  padding: 6px 0;
+}
+
+.chat-input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.chat-input:focus {
+  border-bottom-color: #fff;
+}
+
+.chat-send {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  background: #3A5A94;
+  color: #fff;
+  border: 0;
+  font: 600 14px var(--sans);
+  cursor: pointer;
+}
+
+.chat-send:hover {
+  background: #4A6DAA;
+}
+
+.chat-send:disabled {
+  background: #304D7D;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.chat-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Footer */
+
+.site-footer {
+  background: var(--masthead);
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 32px;
+  font-size: 13px;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* Mobile: ticker, news, markets, AI */
+
+@media (max-width: 1000px) {
+  .main-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "news"
+      "markets"
+      "ai";
+    padding: 16px;
+  }
+
+  .panel-news {
+    padding: 18px;
+  }
+
+  .article:first-of-type h3 {
+    font-size: 26px;
+  }
+
+  .site-header,
+  .ticker,
+  .site-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .site-header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .site-header nav a {
+    margin-left: 0;
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-nav {
+    order: 3;
+    width: 100%;
+  }
+
+  .preview-badge {
+    margin-left: auto;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+
+/* ReCash — Scrollable financial news */
+
+.news-feed {
+  max-height: 650px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #A9B8D8 transparent;
+}
+
+/* WebKit browsers: Chrome, Safari, Edge */
+.news-feed::-webkit-scrollbar {
+  width: 6px;
+}
+
+.news-feed::-webkit-scrollbar-thumb {
+  background: #A9B8D8;
+}
+
+/* Keep the news panel comfortable on smaller screens */
+@media (max-width: 1000px) {
+  .news-feed {
+    max-height: 60vh;
+    padding-right: 6px;
+  }
+}
+/* ReCash — scrollable news section */
+#news-feed {
+  height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 12px;
+}

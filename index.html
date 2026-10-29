@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="ReCash — your workspace for forex markets, financial news, and AI-assisted research."
+  >
+
+  <title>ReCash | Market Intelligence</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script src="markets.js" defer></script>
+  <script src="news.js" defer></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <!-- BLACK MASTHEAD -->
+  <header class="site-header">
+    <a class="logo" href="./index.html" aria-label="ReCash home">
+      <span class="logo-mark" aria-hidden="true">R</span>
+
+      <span>
+        <span class="logo-name">Re<span>Cash</span></span>
+        <span class="logo-tag">A clearer view of the markets.</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#markets">Markets</a>
+      <a href="#news">News</a>
+      <a href="#ai-chat">AI Research</a>
+    </nav>
+
+    <span class="preview-badge">Prototype</span>
+  </header>
+
+  <!-- TICKER PREVIEW -->
+  <div
+    class="ticker"
+    role="region"
+    aria-label="Currency watchlist preview"
+    tabindex="0"
+  >
+    <span>EUR/USD —</span>
+    <span>GBP/USD —</span>
+    <span>USD/JPY —</span>
+    <span>AUD/USD —</span>
+    <span>Preview · Live prices not connected</span>
+  </div>
+
+  <main id="main-content">
+    <section class="sr-only" aria-labelledby="page-title">
+      <h1 id="page-title">Markets move. Stay informed.</h1>
+      <p>
+        Follow currencies, explore the headlines, and bring your
+        market questions into focus.
+      </p>
+    </section>
+
+    <div class="main-grid">
+
+      <!-- NEWS: CENTER ON DESKTOP, FIRST ON MOBILE -->
+      <section
+        class="panel-news"
+        id="news"
+        aria-labelledby="news-title"
+      >
+        <header>
+          <h2 class="panel-title" id="news-title">Market Brief</h2>
+        </header>
+
+        <p class="data-status">News feed is not connected.</p>
+
+        <div id="news-feed">
+          <article class="article">
+            <p class="article-meta">Central Banks / Preview</p>
+            <h3>Interest rates and the currency outlook</h3>
+            <p class="article-impact">
+              Future coverage will track policy decisions and explain
+              why they matter for major currency pairs.
+            </p>
+          </article>
+
+          <article class="article">
+            <p class="article-meta">Economic Data / Preview</p>
+            <h3>The numbers shaping the next session</h3>
+            <p class="article-impact">
+              A place for updates on inflation, employment, and other
+              economic releases.
+            </p>
+          </article>
+
+          <article class="article">
+            <p class="article-meta">Global Markets / Preview</p>
+            <h3>A wider view of market sentiment</h3>
+            <p class="article-impact">
+              Context on the global developments influencing currencies
+              and investor attention.
+            </p>
+          </article>
+        </div>
+
+        <footer class="panel-footer">
+          <p>Preview content only. These are not live news reports.</p>
+        </footer>
+      </section>
+
+      <!-- MARKETS: LEFT ON DESKTOP -->
+      <section
+        class="panel-markets"
+        id="markets"
+        aria-labelledby="markets-title"
+      >
+        <header>
+          <h2 class="panel-title" id="markets-title">Markets</h2>
+        </header>
+
+        <p class="data-status" id="market-status">
+          Live market data is not connected.
+        </p>
+
+        <table class="market-table">
+          <caption>Major forex pairs — prices unavailable</caption>
+
+          <thead>
+            <tr>
+              <th scope="col">Pair</th>
+              <th scope="col">Price</th>
+              <th scope="col">Change</th>
+            </tr>
+          </thead>
+
+          <tbody id="market-rows">
+            <tr>
+              <th scope="row">EUR/USD</th>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">GBP/USD</th>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">USD/JPY</th>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">USD/CHF</th>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">AUD/USD</th>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">USD/CAD</th>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <footer class="panel-footer">
+          <p>
+            Currency prices and changes will appear here once connected.
+          </p>
+        </footer>
+      </section>
+
+      <!-- AI CHAT: RIGHT ON DESKTOP -->
+      <section
+        class="panel-ai"
+        id="ai-chat"
+        aria-labelledby="chat-title"
+      >
+        <header>
+          <h2 class="panel-title" id="chat-title">ReCash AI</h2>
+        </header>
+
+        <p class="data-status" id="chat-status">
+          AI chat is not connected.
+        </p>
+
+        <div
+          class="chat-log"
+          id="chat-messages"
+          role="log"
+          aria-label="Chat messages"
+          aria-live="polite"
+          tabindex="0"
+        >
+          <div class="msg msg--bot">
+            <p class="msg-label">ReCash Demo</p>
+            <p>Enable JavaScript to use the local demo chat.</p>
+          </div>
+        </div>
+
+        <form class="chat-form" id="chat-form">
+          <label for="chat-input">Your market question</label>
+
+          <textarea
+            class="chat-input"
+            id="chat-input"
+            name="message"
+            rows="3"
+            placeholder="What is a currency pair?"
+            aria-describedby="chat-help"
+            disabled
+          ></textarea>
+
+          <button
+            class="chat-send"
+            id="send-button"
+            type="submit"
+            disabled
+          >
+            Send message
+          </button>
+
+          <p class="chat-note" id="chat-help">
+            Messaging requires JavaScript.
+          </p>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>ReCash. A clearer view.</p>
+    <p>For information and education only. Not financial advice.</p>
+  </footer>
+</body>
+</html>
