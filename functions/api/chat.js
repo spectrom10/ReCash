@@ -14,15 +14,6 @@ Never guarantee financial outcomes.
 `;
 
 export async function onRequestPost({ request, env }) {
-    if (env.CHAT_ENABLED !== "true") {
-    return new Response(
-      JSON.stringify({ error: "ReCash AI is temporarily unavailable." }),
-      {
-        status: 503,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
-  }
   const json = (data, status = 200) =>
     new Response(JSON.stringify(data), {
       status,
@@ -32,12 +23,22 @@ export async function onRequestPost({ request, env }) {
       }
     });
 
-  if (!env.GROQ_API_KEY) {
-    return json({ error: "AI service is not configured." }, 503);
+  // Security switch: AI stays disabled until explicitly enabled.
+  if (env.CHAT_ENABLED !== "true") {
+    return json({
+      error: "ReCash AI is temporarily unavailable."
+    }, 503);
   }
 
+  // The Groq API key must remain in Cloudflare secrets.
+  if (!env.GROQ_API_KEY) {
+    return json({
+      error: "AI service is not configured."
+    }, 503);
+  }
 
-  // ReCash AI — basic daily usage protection
+  // Basic daily usage protection.
+  // Note: KV is not an atomic counter.
   const DAILY_CHAT_LIMIT = 20;
 
   if (!env.AI_LIMITS) {
@@ -45,20 +46,6 @@ export async function onRequestPost({ request, env }) {
       error: "AI usage protection is not configured."
     }, 503);
   }
-
-  const today = new Date().toISOString().slice(0, 10);
-  const usageKey = `recash-chat-${today}`;
-
-  const used = Number(
-    (await env.AI_LIMITS.get(usageKey)) || 0
-  );
-
-  if (used >= DAILY_CHAT_LIMIT) {
-    return json({
-      error: "ReCash AI has reached its daily question limit. Please try again tomorrow."
-    }, 429);
-  }
-
 
   let body;
 
@@ -68,9 +55,10 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "Invalid request." }, 400);
   }
 
-  const message = typeof body.message === "string"
-    ? body.message.trim()
-    : "";
+  const message =
+    typeof body.message === "string"
+      ? body.message.trim()
+      : "";
 
   if (!message || message.length > 1000) {
     return json({
@@ -93,7 +81,21 @@ export async function onRequestPost({ request, env }) {
         }))
     : [];
 
+  const today = new Date().toISOString().slice(0, 10);
+  const usageKey = `recash-chat-${today}`;
+
   try {
+    const used = Number(
+      (await env.AI_LIMITS.get(usageKey)) || 0
+    );
+
+    if (used >= DAILY_CHAT_LIMIT) {
+      return json({
+        error:
+          "ReCash AI has reached its daily question limit. " +
+          "Please try again tomorrow."
+      }, 429);
+    }
 
     // Count the request before contacting Groq.
     await env.AI_LIMITS.put(
@@ -102,31 +104,48 @@ export async function onRequestPost({ request, env }) {
       { expirationTtl: 172800 }
     );
 
-
-      
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions", signal: controller.signal,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.GROQ_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "openai/gpt-oss-20b",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...history,
-            { role: "user", content: message }
-          ],
-          temperature: 0.3,
-          max_tokens: 700
-        })
-      }
+    // Abort the Groq request after 15 seconds.
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => controller.abort(),
+      15000
     );
 
+    let response;
+
+    try {
+      response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          signal: controller.signal,
+          headers: {
+            "Authorization": `Bearer ${env.GROQ_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-20b",
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              ...history,
+              { role: "user", content: message }
+            ],
+            temperature: 0.3,
+            max_tokens: 700
+          })
+        }
+      );
+    } finally {
+      // Always clear the timer, even if the request fails.
+      clearTimeout(timeout);
+    }
+
     if (!response.ok) {
-      console.error("Groq request failed:", response.status);
+      console.error(
+        "Groq request failed:",
+        response.status
+      );
+
       return json({
         error: "AI is temporarily unavailable."
       }, 502);
@@ -136,12 +155,17 @@ export async function onRequestPost({ request, env }) {
     const reply = result.choices?.[0]?.message?.content;
 
     if (typeof reply !== "string" || !reply.trim()) {
-      return json({ error: "AI returned an empty response." }, 502);
+      return json({
+        error: "AI returned an empty response."
+      }, 502);
     }
 
     return json({ reply: reply.trim() });
   } catch (error) {
     console.error("Chat endpoint error:", error);
-    return json({ error: "Unable to process your question." }, 500);
+
+    return json({
+      error: "Unable to process your question."
+    }, 500);
   }
 }
