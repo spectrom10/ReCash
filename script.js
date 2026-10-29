@@ -1,3 +1,4 @@
+
 const chatForm = document.querySelector("#chat-form");
 const chatInput = document.querySelector("#chat-input");
 const sendButton = document.querySelector("#send-button");
@@ -5,24 +6,24 @@ const chatMessages = document.querySelector("#chat-messages");
 const chatStatus = document.querySelector("#chat-status");
 const chatHelp = document.querySelector("#chat-help");
 
-// Local demo only. No API connections or API keys.
+const history = [];
+let isLoading = false;
+
 chatInput.disabled = false;
 chatInput.maxLength = 1000;
 chatInput.required = true;
+chatInput.placeholder = "Ask ReCash AI about financial markets...";
 
-chatStatus.textContent = "Local demo • No AI service connected.";
-
+chatStatus.textContent = "ReCash AI • Financial education";
 chatHelp.textContent =
-  "Try asking about forex, currency pairs, or pips. Replies are preset.";
-
-chatInput.placeholder = "What is a currency pair?";
+  "Ask about stocks, forex, ETFs, economics, or financial news.";
 
 chatMessages.replaceChildren();
 
 addMessage(
-  "ReCash Demo",
-  "Welcome! This demo has preset explanations of forex, currency pairs, " +
-    "and pips. It does not access live markets or an AI service.",
+  "ReCash AI",
+  "Welcome to ReCash AI! Ask me about financial markets, " +
+    "stocks, currencies, ETFs, or economic concepts.",
   "assistant"
 );
 
@@ -43,70 +44,82 @@ function addMessage(author, text, role) {
 
   message.append(authorLabel, content);
   chatMessages.append(message);
-
-  // Keep the most recent reply visible inside the chat panel.
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function getDemoReply(question) {
-  const text = question.toLowerCase();
-
-  if (/\b(pip|pips)\b/.test(text)) {
-    return (
-      "A pip is a conventional unit of price movement in forex. " +
-      "For many pairs, one pip is 0.0001. For many Japanese yen pairs, " +
-      "it is 0.01. Check the instrument’s quotation convention."
-    );
-  }
-
-  if (/\b(pair|pairs|eur\/usd)\b/.test(text)) {
-    return (
-      "A currency pair expresses one currency’s value in another. " +
-      "In EUR/USD, EUR is the base currency and USD is the quote currency. " +
-      "A hypothetical price of 1.1000 means one euro costs 1.10 US dollars."
-    );
-  }
-
-  if (/\b(forex|fx|foreign exchange)\b/.test(text)) {
-    return (
-      "Forex means foreign exchange: exchanging one currency for another. " +
-      "Currencies are quoted in pairs, such as EUR/USD. " +
-      "Trading involves risk, and leverage can magnify losses."
-    );
-  }
-
-  if (/\b(hello|hi|hey)\b/.test(text)) {
-    return (
-      "Hello! Try “What is forex?”, “What is a currency pair?”, " +
-      "or “What is a pip?”"
-    );
-  }
-
-  return (
-    "This local demo only has preset replies about forex, currency pairs, " +
-    "and pips. It cannot analyze markets or answer other questions yet."
-  );
-}
-
 function updateSendButton() {
-  sendButton.disabled = chatInput.value.trim().length === 0;
+  sendButton.disabled =
+    isLoading || chatInput.value.trim().length === 0;
 }
 
 chatInput.addEventListener("input", updateSendButton);
 
-chatForm.addEventListener("submit", (event) => {
+chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const question = chatInput.value.trim();
+  if (isLoading) return;
 
+  const question = chatInput.value.trim();
   if (!question) return;
 
-  addMessage("You", question, "user");
-  addMessage("ReCash Demo", getDemoReply(question), "assistant");
+  const previousHistory = history.slice(-6);
 
+  addMessage("You", question, "user");
   chatInput.value = "";
+
+  isLoading = true;
   updateSendButton();
-  chatInput.focus();
+  chatStatus.textContent = "ReCash AI is thinking...";
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: question,
+        history: previousHistory
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "The AI service is unavailable."
+      );
+    }
+
+    if (typeof data.reply !== "string") {
+      throw new Error("The AI returned an invalid response.");
+    }
+
+    addMessage("ReCash AI", data.reply, "assistant");
+
+    history.push(
+      { role: "user", content: question },
+      { role: "assistant", content: data.reply }
+    );
+
+    if (history.length > 6) {
+      history.splice(0, history.length - 6);
+    }
+
+    chatStatus.textContent = "ReCash AI • Financial education";
+  } catch (error) {
+    addMessage(
+      "ReCash AI",
+      error.message || "Something went wrong. Please try again.",
+      "assistant"
+    );
+
+    chatStatus.textContent = "ReCash AI • Temporarily unavailable";
+  } finally {
+    isLoading = false;
+    updateSendButton();
+    chatInput.focus();
+  }
 });
 
 updateSendButton();
