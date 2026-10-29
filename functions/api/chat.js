@@ -102,8 +102,10 @@ export async function onRequestPost({ request, env }) {
       { expirationTtl: 172800 }
     );
 
+
+      
     const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
+      "https://api.groq.com/openai/v1/chat/completions", signal: controller.signal,
       {
         method: "POST",
         headers: {
