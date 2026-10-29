@@ -14,6 +14,15 @@ Never guarantee financial outcomes.
 `;
 
 export async function onRequestPost({ request, env }) {
+    if (env.CHAT_ENABLED !== "true") {
+    return new Response(
+      JSON.stringify({ error: "ReCash AI is temporarily unavailable." }),
+      {
+        status: 503,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
   const json = (data, status = 200) =>
     new Response(JSON.stringify(data), {
       status,
