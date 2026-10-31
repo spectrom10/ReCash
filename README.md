@@ -139,10 +139,4 @@ Recorded as free tools or free-access services in this project; provider quotas,
 - MarketWatch RSS
 - The Guardian RSS
 
-## Using this README
 
-Copy `README.md` and the `assets` folder together into the root of the ReCash repository. Keep `assets/recash-final-ui.png` at that relative path so the screenshot displays on GitHub. GitHub renders the Mermaid diagrams directly; no extra diagram service is part of the website.
-
----
-
-*Documentation snapshot: 29 October 2026. Based on the supplied ReCash project details, the accessible conversation history, and the original UI screenshot. This describes the recorded architecture, not a fresh audit of the deployed repository or service configuration. Exact provider-to-instrument mappings and refresh schedules are intentionally left unspecified where unconfirmed.*
